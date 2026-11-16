@@ -29,9 +29,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .pager::-webkit-scrollbar{display:none}
 .pg{flex:0 0 100%;height:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow-y:auto;overflow-x:hidden;background:var(--bg);color:var(--fg);scrollbar-width:none;position:relative}
 .pg::-webkit-scrollbar{display:none}
-.pg::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.06;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-.in{position:relative;max-width:560px;margin:auto;min-height:100%;padding:58px 20px 64px;will-change:transform}
+.in{position:relative;max-width:560px;margin:auto;min-height:100%;padding:58px 20px 64px}
+/* keep the menu from being copied: no text selection, no long-press save, no image drag */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+img{pointer-events:none;-webkit-user-drag:none}
+/* only the page on screen animates its decorations */
+.pg:not(.cur) .dust{display:none}
+.pg:not(.cur) .float{animation-play-state:paused}
 
 /* page header */
 .eb{display:block;text-align:center;font-family:var(--latin);font-size:.72rem;letter-spacing:.35em;color:var(--acc)}
@@ -70,7 +74,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* cutout image + placeholder */
 .cut{position:relative;aspect-ratio:1}
-.cut img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 18px 16px rgba(0,0,0,.35))}
+.cut img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain}
+/* cheap soft shadow under the cutout (a CSS drop-shadow filter per image made phones lag) */
+.cut::before{content:"";position:absolute;left:12%;right:12%;bottom:4%;height:14%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.38),transparent)}
 .cut.ph img{display:none}
 .phn{display:none}
 .cut.ph .phn,.cut:not(:has(img[src])) .phn{display:grid}
@@ -79,7 +85,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .feat .phn,.cover .phn,dialog .phn{font-size:1.6rem}
 .float{animation:float 5s ease-in-out infinite}
 @keyframes float{50%{transform:translateY(-10px)}}
-.tilt{transform:perspective(800px) rotateX(var(--ty,0deg)) rotateY(var(--tx,0deg));transition:transform .2s}
+@media (hover:hover){.tilt{transform:perspective(800px) rotateX(var(--ty,0deg)) rotateY(var(--tx,0deg));transition:transform .2s}}
 
 /* cover */
 .cover .in{display:flex;flex-direction:column;justify-content:center;text-align:center;padding-top:60px}
@@ -91,7 +97,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .trio .c1{width:58%;left:21%;z-index:2}
 .trio .c2{width:40%;right:-2%;bottom:6%;--r:10deg}
 .trio .c3{width:40%;left:-2%;bottom:6%;--r:-10deg}
-.trio .c2 .tilt,.trio .c3 .tilt{rotate:var(--r)}
+.trio .c2 .cut,.trio .c3 .cut{rotate:var(--r)}
 .idx{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}
 .idx button{padding:10px 4px;border-radius:14px;border:1px solid rgba(227,166,76,.3);font-weight:500;font-size:.9rem;transition:background .2s}
 .idx button:hover{background:rgba(227,166,76,.14)}
@@ -99,15 +105,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .swipe{margin-top:18px;font-size:.82rem;color:var(--sub);animation:nudge 1.8s ease-in-out infinite}
 @keyframes nudge{50%{transform:translateX(-8px)}}
 
-/* branches */
-.bl{list-style:none;display:grid;gap:8px;margin-top:18px}
-.bl a{display:flex;justify-content:space-between;padding:13px 18px;border-radius:16px;background:var(--card)}
-.bl span:last-child{direction:ltr;font-family:var(--latin);color:var(--acc);letter-spacing:.04em}
-.hrs{text-align:center;color:var(--sub);font-size:.85rem;margin-top:6px}
-.btns{display:grid;gap:10px;margin-top:18px}
-.btns a{text-align:center;padding:14px;border-radius:999px;font-weight:700;border:1.5px solid var(--fg)}
-.btns a:first-child{background:var(--fg);color:var(--bg)}
-.credit{text-align:center;font-size:.75rem;color:var(--sub);margin-top:26px}
+.credit{text-align:center;font-size:.75rem;color:var(--sub);margin-top:22px}
 .credit a{color:var(--acc)}
 
 /* chrome: story bars + arrows */
@@ -123,7 +121,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* item sheet */
 dialog{border:0;padding:0;background:var(--bg);color:var(--fg);width:min(480px,100%);max-height:92svh;border-radius:28px;margin:auto;overflow:auto;box-shadow:0 30px 80px -20px rgba(0,0,0,.7)}
-dialog::backdrop{background:rgba(15,8,4,.6);backdrop-filter:blur(5px)}
+dialog::backdrop{background:rgba(15,8,4,.72)}
 dialog[open]{animation:pop .4s cubic-bezier(.2,.8,.2,1)}
 @keyframes pop{from{opacity:0;transform:perspective(900px) rotateX(-16deg) translateY(40px)}}
 .sh{padding:28px 24px 26px;text-align:center}
@@ -159,7 +157,7 @@ dialog[open]{animation:pop .4s cubic-bezier(.2,.8,.2,1)}
     background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);animation:shine 1.1s ease-out calc(var(--d,0s) + .7s)}
 }
 @keyframes up{from{opacity:0;transform:translateY(26px)}}
-@keyframes title{from{opacity:0;transform:translateY(45%) scale(.92);filter:blur(10px)}}
+@keyframes title{from{opacity:0;transform:translateY(45%) scale(.92)}}
 @keyframes side{from{opacity:0;transform:translateX(-34px)}}
 @keyframes spin{from{opacity:0;transform:rotate(-220deg) scale(0)}}
 @keyframes wide{from{opacity:0;letter-spacing:.05em}}
@@ -256,10 +254,6 @@ const MENU = [
   ]],
 ];
 const COVER = ['maltesers-cake', 'baklava', 'cinnamon-roll']; // الصور الثلاث في الغلاف: الوسط، اليسار، اليمين
-const BRANCHES = [
-  ['الفيصلية / المنار', '0543419754'], ['الدوحة', '0138680066'], ['الجامعيين', '0593556815'], ['الفاخرية / الشعلة', '0543419756'],
-  ['العزيزية / التحلية', '0543419755'], ['الجسر / أمواج', '0557588444'], ['العروبة', '0530305431'], ['الفرسان', '0544488865'],
-];
 // ============================================
 
 const $ = id => document.getElementById(id);
@@ -280,6 +274,7 @@ const cover = `<section class="pg t-dark cover" aria-label="الغلاف">${DUST
   <div class="trio a">${['c1', 'c3', 'c2'].map((c, i) => `<div class="tw ${c} float"style="animation-delay:${-i * 1.3}s"><div class="tilt">${cut(ITEMS[COVER[i]])}</div></div>`).join('')}</div>
   <div class="idx">${MENU.map(([cat, lat], i) => `<button class="a a-pop" style="--d:${.5 + i * .06}s" data-go="${i + 1}">${cat}<span>${lat}</span></button>`).join('')}</div>
   <div class="swipe">اسحب لتصفّح المنيو ←</div>
+  <p class="credit">تصميم وتطوير <a href="https://weblume-sa.github.io/" target="_blank" rel="noopener">Weblume</a></p>
 </div></section>`;
 
 const catPage = ([cat, lat, theme, list]) => {
@@ -295,16 +290,8 @@ const catPage = ([cat, lat, theme, list]) => {
   </div></section>`;
 };
 
-const branches = `<section class="pg t-cream" aria-label="فروعنا">${DUST}<div class="in">
-  ${head('فروعنا', 'BRANCHES')}
-  <p class="hrs a a-up" style="--d:.3s">خدمة العملاء من الأحد إلى الخميس، 8 صباحًا حتى 4 عصرًا</p>
-  <ul class="bl">${BRANCHES.map(([n, t], i) => `<li class="a a-side" style="--d:${.3 + i * .06}s"><a href="tel:${t}"><span>${n}</span><span>${t}</span></a></li>`).join('')}</ul>
-  <div class="btns"><a href="https://wa.me/966556809009" target="_blank" rel="noopener">راسلنا واتساب</a><a href="https://linktr.ee/Bakehomesa" target="_blank" rel="noopener">مواقع الفروع على الخريطة</a></div>
-  <p class="credit">تصميم وتطوير <a href="https://weblume-sa.github.io/" target="_blank" rel="noopener">Weblume</a></p>
-</div></section>`;
-
 const pager = $('pager');
-pager.innerHTML = cover + MENU.map(catPage).join('') + branches;
+pager.innerHTML = cover + MENU.map(catPage).join('');
 const pages = [...pager.children];
 $('bars').innerHTML = pages.map(() => '<i></i>').join('');
 const bars = [...$('bars').children];
@@ -319,15 +306,23 @@ pager.addEventListener('click', e => { const b = e.target.closest('[data-go]'); 
 addEventListener('keydown', e => { if ($('sheet').open) return; if (e.key === 'ArrowLeft') $('next').click(); if (e.key === 'ArrowRight') $('prev').click(); });
 
 // انتقال ثلاثي الأبعاد بين الصفحات + شريط التقدم
-let raf = 0;
+// the full-page 3D turn is desktop-only: on phones it forced huge GPU layers every swipe and caused the lag
+const turn3d = motion && matchMedia('(hover:hover)').matches;
+let raf = 0, cur = -1;
 function paint() {
   raf = 0;
-  const x = pos();
+  const x = pos(), now = Math.round(x);
   bars.forEach((b, i) => b.style.setProperty('--f', Math.max(0, Math.min(1, x - i + 1))));
-  $('prev').disabled = x < .5; $('next').disabled = x > pages.length - 1.5;
-  // shortcut: native lazy-loading never fires for sideways pages, so load the current page and its neighbours here
-  pages.forEach((p, i) => Math.abs(i - x) < 2 && p.querySelectorAll('img[data-src]').forEach(im => { im.src = im.dataset.src; im.removeAttribute('data-src'); }));
-  if (!motion) return;
+  if (now !== cur) {
+    cur = now;
+    $('prev').disabled = now < 1; $('next').disabled = now > pages.length - 2;
+    pages.forEach((p, i) => {
+      p.classList.toggle('cur', i === now);
+      // shortcut: native lazy-loading never fires for sideways pages, so load the current page and its neighbours here
+      if (Math.abs(i - now) < 2 && !p.dataset.loaded) { p.dataset.loaded = 1; p.querySelectorAll('img[data-src]').forEach(im => { im.src = im.dataset.src; im.removeAttribute('data-src'); }); }
+    });
+  }
+  if (!turn3d) return;
   pages.forEach((p, i) => {
     const d = i - x, el = p.querySelector('.in');
     if (Math.abs(d) >= 1) { el.style.transform = ''; return; }
@@ -354,6 +349,9 @@ $('x').onclick = () => sheet.close();
 sheet.addEventListener('click', e => e.target === sheet && sheet.close());
 pager.addEventListener('click', e => { const c = e.target.closest('[data-id]'); if (c) open(c.dataset.id); });
 pager.addEventListener('keydown', e => { const c = e.target.closest('[data-id]'); if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); open(c.dataset.id); } });
+
+// منع النسخ وحفظ الصور (لقطة الشاشة مش ممكن تتمنع من موقع)
+['contextmenu', 'copy', 'cut', 'dragstart', 'selectstart'].forEach(t => addEventListener(t, e => e.preventDefault()));
 
 // الصور الكبيرة تميل مع الماوس
 if (motion && matchMedia('(hover:hover)').matches) pager.addEventListener('pointermove', e => {
