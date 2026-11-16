@@ -146,7 +146,8 @@ dialog[open]{animation:pop .4s cubic-bezier(.2,.8,.2,1)}
 @keyframes rise{to{transform:translateY(-300px)}}
 
 /* entrance animations: replay whenever an element comes into view (class "in" set by JS) */
-@media (prefers-reduced-motion:no-preference){
+/* entrance animations run for everyone (short, one-shot); reduced-motion only drops the endless loops and the 3D page turn */
+@media all{
   .a:not(.show){opacity:0}
   .a.show{animation:var(--an) .8s cubic-bezier(.2,.9,.25,1.15) var(--d,0s) backwards}
   .a-up{--an:up}.a-title{--an:title}.a-side{--an:side}.a-spin{--an:spin}.a-wide{--an:wide}.a-pop{--an:pop}.a-drop{--an:drop}
@@ -168,7 +169,7 @@ dialog[open]{animation:pop .4s cubic-bezier(.2,.8,.2,1)}
 @keyframes shine{from{transform:translateX(-120%)}}
 
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation:none!important;transition:none!important}
+  .float,.dust::before,.swipe{animation:none!important}
 }
 </style>
 </head>
@@ -300,7 +301,7 @@ const bars = [...$('bars').children];
 // التنقل بين الصفحات
 const motion = matchMedia('(prefers-reduced-motion:no-preference)').matches;
 const pos = () => Math.abs(pager.scrollLeft) / pager.clientWidth; // RTL: scrollLeft is 0 or negative
-const go = i => pages[Math.max(0, Math.min(pages.length - 1, i))].scrollIntoView({ behavior: motion ? 'smooth' : 'auto', inline: 'start', block: 'nearest' });
+const go = i => pages[Math.max(0, Math.min(pages.length - 1, i))].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
 $('next').onclick = () => go(Math.round(pos()) + 1);
 $('prev').onclick = () => go(Math.round(pos()) - 1);
 pager.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) go(+b.dataset.go); });
@@ -355,7 +356,7 @@ pager.addEventListener('keydown', e => { const c = e.target.closest('[data-id]')
 ['contextmenu', 'copy', 'cut', 'dragstart', 'selectstart'].forEach(t => addEventListener(t, e => e.preventDefault()));
 
 // الصور الكبيرة تميل مع الماوس
-if (motion && matchMedia('(hover:hover)').matches) pager.addEventListener('pointermove', e => {
+if (matchMedia('(hover:hover)').matches) pager.addEventListener('pointermove', e => {
   const r = innerWidth, h = innerHeight, tx = (e.clientX / r - .5) * 18 + 'deg', ty = (.5 - e.clientY / h) * 14 + 'deg';
   document.querySelectorAll('.tilt').forEach(t => { t.style.setProperty('--tx', tx); t.style.setProperty('--ty', ty); });
 });
