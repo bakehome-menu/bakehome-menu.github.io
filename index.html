@@ -69,7 +69,13 @@ img{pointer-events:none;-webkit-user-drag:none}
 .it:hover .cut,.it:active .cut{transform:translateY(-8px) scale(1.06) rotate(-3deg)}
 .it:active{transform:scale(.98)}
 .it h4{font-size:.98rem;font-weight:700;line-height:1.35}
-.it .kc{font-size:.72rem;color:var(--sub)}
+/* calories: yellow badge with a flame */
+.it .kc{display:flex;width:max-content;align-items:center;gap:3px;margin:4px auto 0;padding:2px 9px 2px 7px;border-radius:999px;background:#ffd23f;color:#3a2600;font-size:.72rem;font-weight:500;line-height:1.6}
+.it .kc b{font-family:var(--latin);font-weight:600;font-size:.8rem}
+.kc svg{width:13px;height:13px;fill:#e8590c;flex:none}
+.pbox .pk{background:#ffd23f;color:#3a2600}
+.pbox .pk small{opacity:.85}
+.pbox .pk svg{width:12px;height:12px;fill:#e8590c;vertical-align:-1px}
 .chip{display:inline-flex;align-items:baseline;gap:3px;margin-top:8px;padding:3px 12px;border-radius:999px;background:var(--chip);color:var(--chipfg);font-family:var(--latin);font-weight:600;font-size:1rem}
 .chip small{font-family:"IBM Plex Sans Arabic";font-size:.65rem;font-weight:500}
 
@@ -271,7 +277,8 @@ console.assert(COVER.every(id => ITEMS[id]) && Object.values(ITEMS).every(i => i
 
 const num = p => p % 1 ? p.toFixed(2) : p;
 const cut = (it, cls = '') => `<div class="cut ${cls}"><img data-src="img/${it.id}.webp" alt="${it.name}" onerror="this.parentNode.classList.add('ph')"><span class="phn">${it.name}</span></div>`;
-const pbox = it => `<div class="pbox"><div><small>السعر · ر.س</small><b>${num(it.price)}</b></div><div><small>سعرة حرارية</small><b>${it.kcal}</b></div></div>`;
+const FIRE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 3.6 5.2 5.6 5.2 10.4a5.2 5.2 0 0 1-10.4 0c0-2.4 1.1-3.9 2.3-5.2.2 1.6.9 2.7 2.1 3.3C11.3 7.9 11.1 4.7 12 2Z"/></svg>'; // flame icon for calories
+const pbox = it => `<div class="pbox"><div><small>السعر · ر.س</small><b>${num(it.price)}</b></div><div class="pk"><small>${FIRE} سعرة حرارية</small><b>${it.kcal}</b></div></div>`;
 
 const DUST = '<div class="dust" aria-hidden="true"></div>';
 const head = (title, lat) => `<div class="pg-h"><span class="eb a a-up">حلويات البيت · BAKE HOME</span><h2 class="a a-title" style="--d:.1s">${title}</h2><span class="lat a a-wide" style="--d:.25s">${lat}</span></div>`;
@@ -294,7 +301,7 @@ const catPage = ([cat, lat, theme, list]) => {
       <div><h3 class="a a-side" style="--d:.35s">${f.name}</h3><p class="a a-side" style="--d:.45s">${f.desc}</p><div class="a a-up" style="--d:.55s">${pbox(f)}</div></div>
     </div>
     ${rest.length ? `<div class="sub-h a a-up">أصناف ${cat}</div><div class="items">${rest.map((it, n) =>
-      `<div class="it a a-pop" style="--d:${(n % 2) * .1}s" data-id="${it.id}" role="button" tabindex="0" aria-label="${it.name}، ${num(it.price)} ريال">${cut(it)}<h4>${it.name}</h4><div class="kc">${it.kcal} سعرة</div><span class="chip">${num(it.price)} <small>ر.س</small></span></div>`).join('')}</div>` : ''}
+      `<div class="it a a-pop" style="--d:${(n % 2) * .1}s" data-id="${it.id}" role="button" tabindex="0" aria-label="${it.name}، ${num(it.price)} ريال">${cut(it)}<h4>${it.name}</h4><div class="kc">${FIRE}<b>${it.kcal}</b> سعرة</div><span class="chip">${num(it.price)} <small>ر.س</small></span></div>`).join('')}</div>` : ''}
   </div></section>`;
 };
 
